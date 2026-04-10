@@ -1,40 +1,46 @@
 # Proiect-InkTime
-## 1. Descrierea Proiectului
-InkTime este un smartwatch ultra-low power bazat pe arhitectura nRF52840, echipat cu un ecran E-Paper de 1.54 inch. Proiectul vizeaza monitorizarea activitatii fizice si notificari prin Bluetooth, totul integrat intr-o carcasa ergonomica personalizata.
+## 1. Diagrama Bloc a Sistemului
+Diagrama de mai jos arata cum sunt conectate componentele principale la microcontroller-ul nRF52840:
 
-## 2. Specificatii Tehnice (Hardware)
-Conform listei de materiale (BOM) si schematicului, dispozitivul utilizeaza:
+- **Alimentare:** USB-C -> BQ25180 (Charger) -> Baterie LiPo 400mAh.
+- **Afisaj:** Ecran E-Paper 1.54 inch (Conectat prin SPI).
+- **Senzori:** Accelerometru BMA423 (Conectat prin I2C).
+- **Haptica:** Driver DRV2605 + Motor Vibratii (Conectat prin I2C).
+- **Interactiune:** 3 Butoane Tactile (Conectate prin GPIO).
 
-* **MCU:** Nordic Semiconductor nRF52840 (Multiprotocol Bluetooth 5.4).
-* **Afisaj:** E-Paper Display 1.54 inch (conectat via J3 - FPC 24 pini).
-* **Senzori:** Accelerometru triaxial BMA423 (step counting / gesture).
-* **Management Energie:** IC Incarcare BQ25180 (Lithium-Ion/Polymer).
-* **Haptica:** Driver DRV2605 pentru motorul de vibratii (Shaker).
-* **Alimentare:** Baterie LiPo 400mAh incarcata via USB-C (J4).
+## 2. Bill of Materials (BOM)
+Componente selectate din catalogul JLCPCB:
 
-## 3. Decizii de Proiectare si Integrare
-In aceasta etapa (EVT), designul a fost optimizat pentru asamblarea in carcasa WearAware:
+| Componenta | Producator | JLC Part Number | Datasheet |
+| :--- | :--- | :--- | :--- |
+| MCU nRF52840 | Nordic Semi | C190733 | [Datasheet](https://infocenter.nordicsemi.com/pdf/nRF52840_PS_v1.0.pdf) |
+| Senzor BMA423 | Bosch | C404044 | [Datasheet](https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bma423-ds004.pdf) |
+| Charger BQ25180 | TI | C2907481 | [Datasheet](https://www.ti.com/lit/ds/symlink/bq25180.pdf) |
+| Driver DRV2605L | TI | C63523 | [Datasheet](https://www.ti.com/lit/ds/symlink/drv2605l.pdf) |
+| Antena 2.45GHz | Johanson | C105252 | [Datasheet](https://www.johansontechnology.com/datasheets/2450AT18B100.pdf) |
 
-* **Aliniere Mecanica:** Butoanele tactile (SW_DN, SW_ENT, SW_UP) sunt pozitionate la coordonata Y=3mm pentru a corespunde butoanelor fizice ale carcasei.
-* **Management RF:** Antena de 2.45GHz (ANT1) este plasata in coltul superior, avand zona de "keep-out" (fara plan de masa) pentru a maximiza raza de actiune Bluetooth.
-* **Optimizare Spatiu:** PCB-ul de 46x35mm include un decupaj lateral (notch) de 13.8mm pentru a permite trecerea cablului flexibil al display-ului fara tensionare.
-* **Stack-up (Sandwich):** Ordinea de asamblare este: Carcasa Superioara -> Display -> PCB -> Baterie si Shaker -> Capac Posterior.
+## 3. Functionalitate Hardware
+Dispozitivul foloseste nRF52840 pentru gestionarea comunicatiei Bluetooth Low Energy.
 
-## 4. Structura Repository-ului
-Proiectul este organizat conform cerintelor de livrare:
+- **Display E-Paper:** Foloseste interfata **SPI**. Avantajul principal este consumul de energie zero cand imaginea este statica.
+- **Senzori:** Accelerometrul BMA423 (interfata **I2C**) detecteaza miscarea si pasii.
+- **Haptica:** Driverul DRV2605L (interfata **I2C**) controleaza motorul de vibratii pentru alerte.
+- **Consum:** S-a calculat un consum in standby de aproximativ 20uA, ceea ce asigura o durata de viata a bateriei de peste 30 de zile.
 
-### Hardware
-* Schematic.sch: Schema electronica completa.
-* PCB 2D.brd: Layout-ul placii, verificat pentru consistenta.
+## 4. Mapare Pini nRF52840
 
-### Manufacturing
-* gerbers.zip: Fisierele pentru fabricarea PCB-ului (Copper, Mask, Drill).
-* BOM.txt: Lista completa de componente si part-number-uri.
-* PnP.txt: Fisierul Pick-and-Place pentru asamblarea automata.
+| Functie | Pin nRF | Interfata | Justificare |
+| :--- | :--- | :--- | :--- |
+| SPI SCK | P0.20 | SPI | Ceas pentru ecran |
+| SPI MOSI | P0.21 | SPI | Date pentru ecran |
+| SPI CS | P0.22 | SPI | Selectie ecran |
+| I2C SDA | P0.26 | I2C | Date senzori/charger |
+| I2C SCL | P0.27 | I2C | Ceas senzori/charger |
+| Buton Sus | P0.11 | GPIO | Intrare navigare |
+| Buton OK | P0.12 | GPIO | Intrare selectie |
+| Buton Jos | P0.13 | GPIO | Intrare navigare |
 
-### Mechanical
-* PCB 3D.step: Modelul 3D al placii populate.
-* Exploded View.step: Asamblarea completa (Sandwich) incluzand carcasa, bateria si display-ul.
-
-### Images
-* Randari ale ceasului si capturi de ecran cu layout-ul PCB-ului.
+## 5. Design si Integrare Mecanica
+- **Aliniere:** Butoanele tactile sunt plasate la Y=3mm pentru a se potrivi cu decupajele carcasei WearAware.
+- **Antena:** Are o zona dedicata "keep-out" fara cupru pentru a nu bloca semnalul Bluetooth.
+- **Asamblare:** Componentele sunt asezate tip "sandwich": Carcasa -> Display -> PCB -> Baterie.
