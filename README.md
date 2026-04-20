@@ -7,6 +7,7 @@ Diagrama de mai jos arata cum sunt conectate componentele principale la microcon
 - **Senzori:** Accelerometru BMA423 (Conectat prin I2C).
 - **Haptica:** Driver DRV2605 + Motor Vibratii (Conectat prin I2C).
 - **Interactiune:** 3 Butoane Tactile (Conectate prin GPIO).
+![Diagram](Images/Diagram.jpg)
 
 ## 2. Bill of Materials (BOM)
 Componente selectate din catalogul JLCPCB:
